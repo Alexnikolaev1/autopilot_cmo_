@@ -79,7 +79,7 @@ vercel
 
 ### Рекомендуется для production (много инстансов / корректный rate limit)
 
-Подключите **Upstash Redis** из [Vercel Marketplace (Storage / Redis)](https://vercel.com/marketplace?category=storage&search=redis) к проекту. В env появятся `UPSTASH_REDIS_REST_URL` и `UPSTASH_REDIS_REST_TOKEN` (или устаревшие `KV_*` при миграции с Vercel KV). Тогда **rate limit**, **идемпотентность** публикаций и **счётчики метрик** согласованы **между всеми инстансами**.
+Подключите **Upstash Redis** из [Vercel Marketplace (Storage / Redis)](https://vercel.com/marketplace?category=storage&search=redis) к проекту. Поддерживаются варианты env: `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`, либо legacy `KV_*`, либо только `REDIS_URL`. Тогда **rate limit**, **идемпотентность** публикаций и **счётчики метрик** согласованы **между всеми инстансами**.
 
 ### Проверка сборки локально (как на Vercel)
 

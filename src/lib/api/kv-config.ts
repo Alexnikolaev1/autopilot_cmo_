@@ -9,7 +9,8 @@ export function isKvConfigured(): boolean {
   const hasUpstash =
     Boolean(process.env.UPSTASH_REDIS_REST_URL) &&
     Boolean(process.env.UPSTASH_REDIS_REST_TOKEN);
-  return hasLegacy || hasUpstash;
+  const hasRedisUrl = Boolean(process.env.REDIS_URL);
+  return hasLegacy || hasUpstash || hasRedisUrl;
 }
 
 export const KV_KEY_PREFIX = "v1:acmo";
