@@ -2,6 +2,8 @@
 
 Полноценный SaaS на Next.js 14 для автоматической генерации, планирования и публикации контента с помощью **Gemini 2.5 Flash-Lite**.
 
+**Репозиторий:** [github.com/Alexnikolaev1/autopilot_cmo_](https://github.com/Alexnikolaev1/autopilot_cmo_) · **Демо (Vercel):** [autopilotcmo-psi.vercel.app](https://autopilotcmo-psi.vercel.app)
+
 ## ✦ Возможности
 
 - **Генератор контент-планов** — недельные планы для Instagram, Twitter, LinkedIn
@@ -29,8 +31,8 @@
 ### 1. Клонировать репозиторий
 
 ```bash
-git clone https://github.com/your-username/autopilot-cmo.git
-cd autopilot-cmo
+git clone https://github.com/Alexnikolaev1/autopilot_cmo_.git
+cd autopilot_cmo_
 ```
 
 ### 2. Установить зависимости
