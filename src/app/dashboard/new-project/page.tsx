@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button, Input, Textarea, Select, Card } from "@/components/ui";
 import { PlanPreview } from "@/components/content/PlanPreview";
@@ -30,14 +31,25 @@ const POSTS_PER_WEEK_OPTIONS = [
 ];
 
 export default function NewProjectPage() {
+  const searchParams = useSearchParams();
+  const prefillBusinessDescription = searchParams.get("businessDescription") ?? "";
+  const prefillTargetAudience = searchParams.get("targetAudience") ?? "";
+  const prefillAdditionalContext = searchParams.get("additionalContext") ?? "";
+  const prefillPlatforms = (searchParams.get("platforms") ?? "")
+    .split(",")
+    .map((p) => p.trim())
+    .filter((p) => ["vk", "ok", "max"].includes(p));
+
   const [step, setStep] = useState<Step>("form");
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["vk"]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(
+    prefillPlatforms.length > 0 ? prefillPlatforms : ["vk"]
+  );
   const [formData, setFormData] = useState({
-    businessDescription: "",
-    targetAudience: "",
+    businessDescription: prefillBusinessDescription,
+    targetAudience: prefillTargetAudience,
     tone: "warm",
     postsPerWeek: "5",
-    additionalContext: "",
+    additionalContext: prefillAdditionalContext,
   });
   const [generatedPosts, setGeneratedPosts] = useState<GeneratedPost[]>([]);
   const [rawOutput, setRawOutput] = useState("");
@@ -46,6 +58,7 @@ export default function NewProjectPage() {
   const [postPlatform, setPostPlatform] = useState("vk");
   const [postOutput, setPostOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSavingProject, setIsSavingProject] = useState(false);
 
   const togglePlatform = (p: string) => {
     setSelectedPlatforms((prev) =>
@@ -74,21 +87,39 @@ export default function NewProjectPage() {
       const data = await res.json();
 
       if (data.plan?.posts) {
-        setGeneratedPosts(
-          data.plan.posts.map((p: GeneratedPost, i: number) => ({
+        const normalizedPosts = data.plan.posts.map((p: GeneratedPost, i: number) => ({
             ...p,
             id: p.id || `post_${i}`,
             status: "draft",
-          }))
-        );
+          }));
+        setGeneratedPosts(normalizedPosts);
         setStep("preview");
         toast.success("Контент-план готов! ✦");
+        setIsSavingProject(true);
+        const nameFromContext = (formData.additionalContext.match(/Бизнес:\s*([^\n]+)/i)?.[1] ?? "").trim();
+        const projectName = nameFromContext || formData.businessDescription.slice(0, 42) || "Новый проект";
+        await fetch("/api/projects", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: projectName,
+            businessType: "Пользовательский проект",
+            businessDescription: formData.businessDescription,
+            targetAudience: formData.targetAudience,
+            tone: formData.tone as Tone,
+            platforms: selectedPlatforms as Platform[],
+            posts: normalizedPosts,
+            title: data.plan.title,
+          }),
+        });
+        setIsSavingProject(false);
       } else {
         throw new Error("No posts in response");
       }
     } catch (e) {
       toast.error("Ошибка генерации. Проверьте API-ключ.");
       setStep("form");
+      setIsSavingProject(false);
     }
   };
 
@@ -294,6 +325,9 @@ export default function NewProjectPage() {
                 <div className="text-xs text-muted mt-0.5">
                   {generatedPosts.length} постов для {selectedPlatforms.join(", ")}. Одобрите и запланируйте публикации.
                 </div>
+                {isSavingProject && (
+                  <div className="text-[11px] text-muted mt-1">Сохраняем проект в дашборд...</div>
+                )}
               </div>
             </div>
             <PlanPreview

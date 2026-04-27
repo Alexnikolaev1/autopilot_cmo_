@@ -30,7 +30,13 @@ export default function OnboardingPage() {
   };
 
   const handleFinish = () => {
-    router.push("/dashboard");
+    const params = new URLSearchParams({
+      businessDescription: formData.businessDesc,
+      targetAudience: formData.audience,
+      additionalContext: `Бизнес: ${formData.businessName}`,
+      platforms: formData.platforms.join(","),
+    });
+    router.push(`/dashboard/new-project?${params.toString()}`);
   };
 
   return (
@@ -159,7 +165,7 @@ export default function OnboardingPage() {
                 </h2>
                 <p className="text-sm text-muted">
                   Ваш AI-директор по маркетингу настроен и готов к работе.
-                  Перейдите на дашборд и создайте первый контент-план.
+                  Переходим сразу к созданию первого контент-плана.
                 </p>
               </div>
               <div className="bg-surface2 rounded-xl p-4 border border-white/7 text-sm space-y-2">
@@ -177,7 +183,7 @@ export default function OnboardingPage() {
                 </div>
               </div>
               <Button onClick={handleFinish} size="lg" className="w-full">
-                Перейти на дашборд ✦
+                Создать первый контент-план ✦
               </Button>
             </div>
           )}

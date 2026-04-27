@@ -2,13 +2,14 @@ import Link from "next/link";
 import { getSession } from "@/lib/get-session";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { MOCK_PROJECTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui";
 import { PLATFORM_META } from "@/lib/types";
+import { readProjectsFromCookie } from "@/lib/projects/storage";
 
 export default async function ProjectsPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  const projects = readProjectsFromCookie();
 
   return (
     <div className="flex min-h-screen bg-bg">
@@ -26,7 +27,7 @@ export default async function ProjectsPage() {
 
         <div className="flex-1 overflow-y-auto p-7">
           <div className="grid grid-cols-2 gap-4">
-            {MOCK_PROJECTS.map((project) => (
+            {projects.map((project) => (
               <Link key={project.id} href="/dashboard/new-project">
                 <div className="bg-surface border border-white/7 rounded-2xl p-5 hover:border-white/15 hover:-translate-y-0.5 transition-all cursor-pointer">
                   <div className="flex items-start justify-between mb-3">
@@ -64,6 +65,11 @@ export default async function ProjectsPage() {
                 </div>
               </Link>
             ))}
+            {projects.length === 0 && (
+              <div className="col-span-2 bg-surface border border-white/7 rounded-2xl p-6 text-sm text-muted">
+                Проектов пока нет. Создайте первый контент-план, чтобы увидеть его здесь.
+              </div>
+            )}
 
             {/* New project card */}
             <Link href="/dashboard/new-project">

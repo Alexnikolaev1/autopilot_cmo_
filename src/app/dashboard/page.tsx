@@ -1,13 +1,20 @@
 import Link from "next/link";
 import { getSession } from "@/lib/get-session";
 import { StatsCard } from "@/components/dashboard/StatsCard";
-import { MOCK_PROJECTS, STATS } from "@/lib/mock-data";
 import { Button } from "@/components/ui";
 import { PLATFORM_META } from "@/lib/types";
+import { readProjectsFromCookie } from "@/lib/projects/storage";
 
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) return null;
+  const projects = readProjectsFromCookie();
+  const posts = projects.flatMap((project) => project.plan?.posts ?? []);
+  const scheduledPosts = posts.filter((post) => post.status === "scheduled").length;
+  const publishedPosts = posts.filter((post) => post.status === "published").length;
+  const postsGenerated = posts.length;
+  const activeProjects = projects.filter((project) => project.status === "active");
+  const topProjectPosts = projects[0]?.plan?.posts ?? [];
 
   return (
     <div className="flex flex-col h-full">
@@ -35,30 +42,30 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-4 gap-4 mb-7">
           <StatsCard
             label="Постов создано"
-            value={STATS.postsGenerated}
-            delta="↑ +12 за неделю"
+            value={postsGenerated}
+            delta={`${activeProjects.length} активных проектов`}
             positive
             color="#a78bfa"
           />
           <StatsCard
             label="Запланировано"
-            value={STATS.postsScheduled}
-            delta="↑ 3 на сегодня"
+            value={scheduledPosts}
+            delta="В очереди на публикацию"
             positive
             color="#38bdf8"
           />
           <StatsCard
             label="Опубликовано"
-            value={STATS.postsPublished}
-            delta="↑ +8% охваты"
+            value={publishedPosts}
+            delta="Успешных публикаций"
             positive
             color="#34d399"
           />
           <StatsCard
             label="Вовлечённость"
-            value={`${STATS.engagementRate}%`}
-            delta="↓ -0.2% от нормы"
-            positive={false}
+            value={postsGenerated > 0 ? "N/A" : "0%"}
+            delta="Появится после аналитики"
+            positive={postsGenerated > 0}
             color="#fbbf24"
           />
         </div>
@@ -72,7 +79,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-7">
-          {MOCK_PROJECTS.map((project) => (
+          {projects.map((project) => (
             <Link key={project.id} href="/dashboard/new-project">
               <div className="bg-surface border border-white/7 rounded-2xl p-4 hover:border-white/15 hover:-translate-y-0.5 transition-all cursor-pointer">
                 <div className="flex items-start justify-between mb-3">
@@ -113,13 +120,18 @@ export default async function DashboardPage() {
             </Link>
           ))}
         </div>
+        {projects.length === 0 && (
+          <div className="mb-7 bg-surface2 border border-white/7 rounded-2xl p-6 text-sm text-muted">
+            Пока нет сохранённых проектов. Создайте первый контент-план, и он появится здесь.
+          </div>
+        )}
 
         {/* Upcoming posts */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-bold">Ближайшие публикации</h2>
         </div>
         <div className="flex flex-col gap-2">
-          {MOCK_PROJECTS[0].plan?.posts.map((post) => (
+          {topProjectPosts.map((post) => (
             <div key={post.id} className="flex items-start gap-3 p-4 bg-surface2 border border-white/7 rounded-xl">
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
@@ -142,6 +154,9 @@ export default async function DashboardPage() {
             </div>
           ))}
         </div>
+        {topProjectPosts.length === 0 && (
+          <div className="text-sm text-muted">Нет ближайших публикаций.</div>
+        )}
       </div>
     </div>
   );
