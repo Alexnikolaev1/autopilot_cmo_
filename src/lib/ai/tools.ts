@@ -1,5 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
+import { ALL_PLATFORMS } from "@/lib/types";
 
 export const tools = {
   generateMarketingPlan: tool({
@@ -13,7 +14,7 @@ export const tools = {
         .string()
         .describe("Description of the target audience"),
       platforms: z
-        .array(z.enum(["linkedin", "twitter", "instagram"]))
+        .array(z.enum(ALL_PLATFORMS))
         .describe("Social media platforms to create content for"),
       tone: z
         .enum(["professional", "humorous", "inspirational", "warm", "casual"])
@@ -34,7 +35,18 @@ export const tools = {
             platform,
             text: `[Post ${i + 1} for ${platform}]`,
             hashtags: ["#marketing", "#content"],
-            bestTime: platform === "linkedin" ? "09:00-11:00" : platform === "instagram" ? "18:00-20:00" : "12:00-14:00",
+            bestTime:
+              platform === "linkedin"
+                ? "09:00-11:00"
+                : platform === "instagram"
+                ? "18:00-20:00"
+                : platform === "vk"
+                ? "12:00-14:00"
+                : platform === "ok"
+                ? "10:00-12:00"
+                : platform === "max"
+                ? "13:00-15:00"
+                : "12:00-14:00",
           }))
         ),
       };
@@ -69,7 +81,7 @@ export const tools = {
     parameters: z.object({
       postId: z.string().describe("ID of the post to analyse"),
       platform: z
-        .enum(["linkedin", "twitter", "instagram"])
+        .enum(ALL_PLATFORMS)
         .describe("Platform of the post"),
     }),
     execute: async ({ postId, platform }) => {

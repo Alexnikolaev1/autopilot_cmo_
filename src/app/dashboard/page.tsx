@@ -3,6 +3,7 @@ import { getSession } from "@/lib/get-session";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { MOCK_PROJECTS, STATS } from "@/lib/mock-data";
 import { Button } from "@/components/ui";
+import { PLATFORM_META } from "@/lib/types";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -17,6 +18,9 @@ export default async function DashboardPage() {
           <p className="text-xs text-muted mt-0.5">Обзор вашей маркетинговой активности</p>
         </div>
         <div className="flex gap-2">
+          <Link href="/dashboard/competitors">
+            <Button variant="ghost" size="sm">Анализ конкурентов →</Button>
+          </Link>
           <Link href="/dashboard/analytics">
             <Button variant="ghost" size="sm">Отчёт недели →</Button>
           </Link>
@@ -84,15 +88,14 @@ export default async function DashboardPage() {
                   {project.plan?.platforms.map((p) => (
                     <span
                       key={p}
-                      className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                        p === "instagram"
-                          ? "bg-amber-400/10 text-amber-400 border-amber-400/20"
-                          : p === "twitter"
-                          ? "bg-violet-400/10 text-violet-400 border-violet-400/20"
-                          : "bg-sky-400/10 text-sky-400 border-sky-400/20"
-                      }`}
+                      className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+                      style={{
+                        background: `${PLATFORM_META[p].color}15`,
+                        color: PLATFORM_META[p].color,
+                        borderColor: `${PLATFORM_META[p].color}40`,
+                      }}
                     >
-                      {p}
+                      {PLATFORM_META[p].shortLabel}
                     </span>
                   ))}
                 </div>
@@ -118,12 +121,14 @@ export default async function DashboardPage() {
         <div className="flex flex-col gap-2">
           {MOCK_PROJECTS[0].plan?.posts.map((post) => (
             <div key={post.id} className="flex items-start gap-3 p-4 bg-surface2 border border-white/7 rounded-xl">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                post.platform === "instagram"
-                  ? "bg-amber-400/12 text-amber-400"
-                  : "bg-violet-400/12 text-violet-400"
-              }`}>
-                {post.platform === "instagram" ? "IG" : "TW"}
+              <div
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
+                style={{
+                  background: `${PLATFORM_META[post.platform].color}20`,
+                  color: PLATFORM_META[post.platform].color,
+                }}
+              >
+                {PLATFORM_META[post.platform].shortLabel}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-white leading-relaxed line-clamp-2">{post.text}</p>

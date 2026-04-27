@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MOCK_PROJECTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui";
+import { PLATFORM_META } from "@/lib/types";
 
 export default async function ProjectsPage() {
   const session = await getSession();
@@ -39,11 +40,17 @@ export default async function ProjectsPage() {
                   </div>
                   <div className="flex gap-1.5 flex-wrap mb-3">
                     {project.plan?.platforms.map((p) => (
-                      <span key={p} className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
-                        p === "instagram" ? "bg-amber-400/10 text-amber-400 border-amber-400/20"
-                        : p === "twitter" ? "bg-violet-400/10 text-violet-400 border-violet-400/20"
-                        : "bg-sky-400/10 text-sky-400 border-sky-400/20"
-                      }`}>{p}</span>
+                      <span
+                        key={p}
+                        className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+                        style={{
+                          background: `${PLATFORM_META[p].color}15`,
+                          color: PLATFORM_META[p].color,
+                          borderColor: `${PLATFORM_META[p].color}40`,
+                        }}
+                      >
+                        {PLATFORM_META[p].shortLabel}
+                      </span>
                     ))}
                   </div>
                   <div className="h-1 bg-surface3 rounded-full overflow-hidden mb-2">
