@@ -123,7 +123,7 @@ export default function OnboardingPage() {
                   Платформы
                 </div>
                 <div className="flex gap-2">
-                  {["Instagram", "ВКонтакте", "Одноклассники", "MAX"].map((p) => (
+                  {["ВКонтакте", "Одноклассники", "MAX"].map((p) => (
                     <button
                       key={p}
                       onClick={() => togglePlatform(p)}

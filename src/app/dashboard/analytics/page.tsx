@@ -35,9 +35,9 @@ export default async function AnalyticsPage() {
             <div className="text-sm font-bold mb-4">Топ постов</div>
             <div className="flex flex-col gap-2">
               {[
-                { platform: "IG", title: "Тыквенный латте", reach: "3.2K", color: "text-amber-400" },
-                { platform: "TW", title: "Утренний кофе", reach: "2.8K", color: "text-violet-400" },
-                { platform: "LI", title: "Автоматизация бизнеса", reach: "1.9K", color: "text-sky-400" },
+                { platform: "ВК", title: "Тыквенный латте", reach: "3.2K", color: "text-amber-400" },
+                { platform: "ОК", title: "Утренний кофе", reach: "2.8K", color: "text-violet-400" },
+                { platform: "MAX", title: "Автоматизация бизнеса", reach: "1.9K", color: "text-sky-400" },
               ].map((p) => (
                 <div key={p.title} className="flex items-center justify-between p-3 bg-surface2 rounded-xl">
                   <div className="flex items-center gap-2">
@@ -55,9 +55,9 @@ export default async function AnalyticsPage() {
             <div className="text-sm font-bold mb-4">По платформам</div>
             <div className="flex flex-col gap-4">
               {[
-                { label: "Instagram", pct: 52, color: "#fbbf24" },
-                { label: "ВКонтакте", pct: 31, color: "#4C75A3" },
-                { label: "Одноклассники", pct: 17, color: "#F5820D" },
+                { label: "ВКонтакте", pct: 52, color: "#4C75A3" },
+                { label: "Одноклассники", pct: 31, color: "#F5820D" },
+                { label: "MAX", pct: 17, color: "#005FF9" },
               ].map((p) => (
                 <div key={p.label}>
                   <div className="flex justify-between text-xs mb-1.5">

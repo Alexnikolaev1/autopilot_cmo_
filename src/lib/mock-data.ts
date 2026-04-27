@@ -13,19 +13,19 @@ export const MOCK_PROJECTS: Project[] = [
       businessDescription: "Кофейня с авторскими напитками",
       targetAudience: "Молодёжь 20-35, ценители кофе",
       tone: "warm",
-      platforms: ["instagram", "vk"],
+      platforms: ["vk", "ok"],
       posts: [
         {
           id: "post_1",
-          platform: "instagram",
+          platform: "vk",
           text: "☕ Утро начинается с нас! Попробуйте новый сезонный латте с карамелью и морской солью. Осень — лучшее время для уюта.",
-          hashtags: ["#coffee", "#autumn", "#latte", "#Frankfurt", "#кофе"],
+          hashtags: ["#кофе", "#осень", "#латте", "#уют"],
           bestTime: "09:00",
           status: "approved",
         },
         {
           id: "post_2",
-          platform: "vk",
+          platform: "ok",
           text: "Октябрь — это кофейный сезон. Загляните к нам за новым осенним меню ☕🍁",
           hashtags: ["#кофе", "#осень", "#кофейня"],
           bestTime: "14:00",
@@ -44,15 +44,15 @@ export const MOCK_PROJECTS: Project[] = [
     createdAt: "2024-04-10",
     plan: {
       id: "plan_2",
-      title: "B2B Instagram/VK-стратегия",
+      title: "B2B ВК/ОК-стратегия",
       businessDescription: "IT-консалтинговая компания",
       targetAudience: "Руководители и CTO компаний 50-500 чел.",
       tone: "professional",
-      platforms: ["instagram"],
+      platforms: ["ok"],
       posts: [
         {
           id: "post_3",
-          platform: "instagram",
+          platform: "ok",
           text: "Как автоматизация процессов помогает B2B-командам снижать операционные расходы на 35% за квартал...",
           hashtags: ["#b2b", "#automation", "#itconsulting", "#roi"],
           bestTime: "10:00",

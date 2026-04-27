@@ -12,7 +12,6 @@ const PLATFORM_OPTIONS = [
   { value: "vk", label: "ВКонтакте" },
   { value: "ok", label: "Одноклассники" },
   { value: "max", label: "MAX (Mail.ru)" },
-  { value: "instagram", label: "Instagram" },
 ];
 
 const TONE_OPTIONS = [
@@ -32,7 +31,7 @@ const POSTS_PER_WEEK_OPTIONS = [
 
 export default function NewProjectPage() {
   const [step, setStep] = useState<Step>("form");
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["instagram"]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["vk"]);
   const [formData, setFormData] = useState({
     businessDescription: "",
     targetAudience: "",
@@ -44,7 +43,7 @@ export default function NewProjectPage() {
   const [rawOutput, setRawOutput] = useState("");
   const [activeTab, setActiveTab] = useState<"plan" | "post" | "ad">("plan");
   const [postTopic, setPostTopic] = useState("");
-  const [postPlatform, setPostPlatform] = useState("instagram");
+  const [postPlatform, setPostPlatform] = useState("vk");
   const [postOutput, setPostOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 

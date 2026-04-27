@@ -5,7 +5,6 @@
 import { vkWallPost, formatVKPost } from "./vk";
 import { okPublishPost, formatOKPost } from "./ok";
 import { maxSendMessage, formatMAXPost } from "./max";
-import { instagramPublishPost } from "./instagram";
 import type { Platform, PublishResult, SocialCredentials } from "@/lib/types";
 
 export interface PublishPostParams {
@@ -98,24 +97,6 @@ export async function publishToSocial(
           platformPostId: String(result.messageId),
         };
       }
-
-      case "instagram":
-        if (!credentials.instagram) {
-          return { success: false, error: "Instagram не подключён" };
-        }
-        const igResult = await instagramPublishPost({
-          credentials: credentials.instagram,
-          text,
-          hashtags,
-        });
-        if (!igResult.success) {
-          return { success: false, error: `Instagram: ${igResult.error}` };
-        }
-        return {
-          success: true,
-          platformPostId: String(igResult.mediaId),
-          url: igResult.permalink,
-        };
 
       default:
         return { success: false, error: "Неизвестная платформа" };

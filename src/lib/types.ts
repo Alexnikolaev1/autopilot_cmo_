@@ -4,19 +4,17 @@ export interface Session {
 }
 
 export type Platform =
-  | "instagram"
   | "vk"
   | "ok"
   | "max";
 
 export const ALL_PLATFORMS = [
-  "instagram",
   "vk",
   "ok",
   "max",
 ] as const satisfies readonly Platform[];
 
-export const SOCIAL_PLATFORMS = ["vk", "ok", "max", "instagram"] as const;
+export const SOCIAL_PLATFORMS = ["vk", "ok", "max"] as const;
 export type SocialPlatform = (typeof SOCIAL_PLATFORMS)[number];
 
 export type Tone =
@@ -83,12 +81,6 @@ export interface SocialCredentials {
     channelId: string;
     channelName: string;
   };
-  instagram?: {
-    accessToken: string;
-    igUserId: string;
-    username: string;
-    defaultImageUrl?: string;
-  };
 }
 
 export interface PublishResult {
@@ -140,15 +132,5 @@ export const PLATFORM_META: Record<
     hashtagStyle: "block",
     description: "Мессенджер-соцсеть Mail.ru",
     audience: "25-45 лет, активные пользователи",
-  },
-  instagram: {
-    label: "Instagram",
-    shortLabel: "IG",
-    color: "#E1306C",
-    bgColor: "rgba(225,48,108,0.12)",
-    maxLength: 2200,
-    hashtagStyle: "block",
-    description: "Визуальный контент и сторис",
-    audience: "18-35 лет, городская молодёжь",
   },
 };
