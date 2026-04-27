@@ -13,8 +13,6 @@ const PLATFORM_OPTIONS = [
   { value: "ok", label: "Одноклассники" },
   { value: "max", label: "MAX (Mail.ru)" },
   { value: "instagram", label: "Instagram" },
-  { value: "twitter", label: "Twitter / X" },
-  { value: "linkedin", label: "LinkedIn" },
 ];
 
 const TONE_OPTIONS = [

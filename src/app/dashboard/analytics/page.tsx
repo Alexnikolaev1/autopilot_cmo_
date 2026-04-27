@@ -56,8 +56,8 @@ export default async function AnalyticsPage() {
             <div className="flex flex-col gap-4">
               {[
                 { label: "Instagram", pct: 52, color: "#fbbf24" },
-                { label: "Twitter/X", pct: 31, color: "#a78bfa" },
-                { label: "LinkedIn", pct: 17, color: "#38bdf8" },
+                { label: "ВКонтакте", pct: 31, color: "#4C75A3" },
+                { label: "Одноклассники", pct: 17, color: "#F5820D" },
               ].map((p) => (
                 <div key={p.label}>
                   <div className="flex justify-between text-xs mb-1.5">

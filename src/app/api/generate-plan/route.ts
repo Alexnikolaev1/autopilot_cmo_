@@ -63,7 +63,7 @@ ${platformGuide}
   "posts": [
     {
       "id": "уникальный_id_строка",
-      "platform": "vk|ok|max|instagram|twitter|linkedin",
+      "platform": "vk|ok|max|instagram",
       "text": "готовый текст поста",
       "hashtags": ["#хештег1", "#хештег2"],
       "bestTime": "HH:MM",

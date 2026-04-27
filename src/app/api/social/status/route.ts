@@ -26,6 +26,14 @@ export async function GET(req: Request) {
         max: creds.max
           ? { connected: true, channelName: creds.max.channelName, channelId: creds.max.channelId }
           : { connected: false },
+        instagram: creds.instagram
+          ? {
+              connected: true,
+              accountName: creds.instagram.username,
+              igUserId: creds.instagram.igUserId,
+              defaultImageUrl: creds.instagram.defaultImageUrl,
+            }
+          : { connected: false },
         ...(includeMetrics
           ? { metrics: await getPublishMetricsSnapshot() }
           : {}),

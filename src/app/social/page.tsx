@@ -13,12 +13,16 @@ interface PlatformStatus {
   groupId?: string;
   channelName?: string;
   channelId?: string;
+  accountName?: string;
+  igUserId?: string;
+  defaultImageUrl?: string;
 }
 
 interface SocialStatus {
   vk: PlatformStatus;
   ok: PlatformStatus;
   max: PlatformStatus;
+  instagram: PlatformStatus;
 }
 
 const PLATFORMS: Array<{
@@ -65,6 +69,17 @@ const PLATFORMS: Array<{
       { name: "channelId", label: "ID канала", placeholder: "-1001234567890", type: "text", hint: "Добавьте бота в канал как администратора, затем получите chat_id" },
     ],
   },
+  {
+    id: "instagram" as const,
+    icon: "IG",
+    docsUrl: "https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login",
+    docsLabel: "Instagram Graph API docs",
+    fields: [
+      { name: "accessToken", label: "Instagram Access Token", placeholder: "EAAG...", type: "password", hint: "Токен Instagram Graph API с правами публикации" },
+      { name: "igUserId", label: "Instagram User ID", placeholder: "1784...", type: "text", hint: "ID Instagram professional account (из Graph API)" },
+      { name: "defaultImageUrl", label: "Default image URL (для постинга)", placeholder: "https://.../image.jpg", type: "text", hint: "Instagram API требует изображение для feed-поста" },
+    ],
+  },
 ];
 
 export default function SocialNetworksPage() {
@@ -72,6 +87,7 @@ export default function SocialNetworksPage() {
     vk: { connected: false },
     ok: { connected: false },
     max: { connected: false },
+    instagram: { connected: false },
   });
   const [expandedPlatform, setExpandedPlatform] = useState<SocialPlatform | null>(null);
   const [formValues, setFormValues] = useState<Record<string, Record<string, string>>>({});
@@ -208,9 +224,9 @@ export default function SocialNetworksPage() {
                           )}
                         </div>
                         <div className="text-xs text-muted mt-0.5">{meta.audience}</div>
-                        {s.connected && (s.groupName || s.channelName) && (
+                        {s.connected && (s.groupName || s.channelName || s.accountName) && (
                           <div className="text-xs mt-1" style={{ color: meta.color }}>
-                            {s.groupName ?? s.channelName}
+                            {s.groupName ?? s.channelName ?? s.accountName}
                           </div>
                         )}
                       </div>
@@ -304,6 +320,15 @@ export default function SocialNetworksPage() {
                               <li>Скопируйте выданный токен</li>
                               <li>Добавьте бота в канал как администратора</li>
                               <li>Напишите боту /start в канале, ID появится в обновлениях</li>
+                            </ol>
+                          )}
+                          {platform.id === "instagram" && (
+                            <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
+                              <li>Нужен Instagram Professional account (Business/Creator)</li>
+                              <li>Свяжите Instagram с Facebook Page и Meta App</li>
+                              <li>Получите access token с правами Instagram Graph API</li>
+                              <li>Укажите IG User ID аккаунта</li>
+                              <li>Укажите defaultImageUrl — без него feed-пост не опубликуется</li>
                             </ol>
                           )}
                         </div>

@@ -4,12 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Button, Input } from "@/components/ui";
-import { PLATFORM_META } from "@/lib/types";
+import { ALL_PLATFORMS, PLATFORM_META } from "@/lib/types";
 import type { Platform } from "@/lib/types";
 import type { Competitor, CompetitorAnalysis, CompetitorComparisonReport } from "@/lib/competitors/types";
 import { AnalysisCard, ComparisonReportView } from "@/components/competitors/AnalysisViews";
-
-const ALL_PLATFORMS: Platform[] = ["vk", "ok", "max", "instagram", "twitter", "linkedin"];
 
 export default function CompetitorsPage() {
   const [competitors, setCompetitors] = useState<Competitor[]>([]);

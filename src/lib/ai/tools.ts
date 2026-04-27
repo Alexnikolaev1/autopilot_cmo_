@@ -36,9 +36,7 @@ export const tools = {
             text: `[Post ${i + 1} for ${platform}]`,
             hashtags: ["#marketing", "#content"],
             bestTime:
-              platform === "linkedin"
-                ? "09:00-11:00"
-                : platform === "instagram"
+              platform === "instagram"
                 ? "18:00-20:00"
                 : platform === "vk"
                 ? "12:00-14:00"
@@ -61,7 +59,7 @@ export const tools = {
         .enum(["professional", "humorous", "inspirational"])
         .describe("Tone of the ad copy"),
       targetPlatform: z
-        .enum(["facebook", "instagram", "google", "linkedin"])
+        .enum(["facebook", "instagram", "google", "vk", "ok", "max"])
         .describe("Platform where the ad will be shown"),
       callToAction: z.string().describe("Desired user action"),
     }),

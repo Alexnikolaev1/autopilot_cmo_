@@ -3,6 +3,7 @@ import { saveSocialCredentials, disconnectPlatform } from "@/lib/social/credenti
 import { vkVerifyToken, vkGetGroup } from "@/lib/social/vk";
 import { okVerifyToken } from "@/lib/social/ok";
 import { maxVerifyToken } from "@/lib/social/max";
+import { instagramVerifyAccess } from "@/lib/social/instagram";
 import { connectSchema, socialPlatformSchema } from "@/lib/social/schemas";
 import { checkRateLimit } from "@/lib/api/rate-limit";
 import { getRequestId, withRequestHeaders } from "@/lib/api/request-context";
@@ -92,6 +93,28 @@ export async function POST(req: Request) {
         });
         return withRequestHeaders(
           { success: true, botName: result.botName },
+          requestId
+        );
+      }
+      case "instagram": {
+        const verify = await instagramVerifyAccess({
+          accessToken: data.accessToken,
+          igUserId: data.igUserId,
+        });
+        if (!verify.valid) {
+          return jsonError("Токен Instagram недействителен или IG User ID неверный", requestId, 422);
+        }
+
+        await saveSocialCredentials({
+          instagram: {
+            accessToken: data.accessToken,
+            igUserId: data.igUserId,
+            username: verify.username ?? `ig_${data.igUserId}`,
+            defaultImageUrl: data.defaultImageUrl,
+          },
+        });
+        return withRequestHeaders(
+          { success: true, username: verify.username },
           requestId
         );
       }

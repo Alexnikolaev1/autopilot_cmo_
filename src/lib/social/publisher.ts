@@ -5,6 +5,7 @@
 import { vkWallPost, formatVKPost } from "./vk";
 import { okPublishPost, formatOKPost } from "./ok";
 import { maxSendMessage, formatMAXPost } from "./max";
+import { instagramPublishPost } from "./instagram";
 import type { Platform, PublishResult, SocialCredentials } from "@/lib/types";
 
 export interface PublishPostParams {
@@ -98,23 +99,22 @@ export async function publishToSocial(
         };
       }
 
-      // International platforms — stub for MVP
       case "instagram":
+        if (!credentials.instagram) {
+          return { success: false, error: "Instagram не подключён" };
+        }
+        const igResult = await instagramPublishPost({
+          credentials: credentials.instagram,
+          text,
+          hashtags,
+        });
+        if (!igResult.success) {
+          return { success: false, error: `Instagram: ${igResult.error}` };
+        }
         return {
-          success: false,
-          error: "Instagram публикация требует Meta Business API. Используйте ручную публикацию.",
-        };
-
-      case "twitter":
-        return {
-          success: false,
-          error: "Twitter публикация требует Twitter API v2 с платным тарифом.",
-        };
-
-      case "linkedin":
-        return {
-          success: false,
-          error: "LinkedIn публикация требует LinkedIn Marketing API.",
+          success: true,
+          platformPostId: String(igResult.mediaId),
+          url: igResult.permalink,
         };
 
       default:

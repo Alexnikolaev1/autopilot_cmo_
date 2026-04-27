@@ -29,4 +29,10 @@ export const connectSchema = z.discriminatedUnion("platform", [
     accessToken: z.string().min(10),
     channelId: z.string().min(1),
   }),
+  z.object({
+    platform: z.literal("instagram"),
+    accessToken: z.string().min(10),
+    igUserId: z.string().min(2),
+    defaultImageUrl: z.string().url().optional(),
+  }),
 ]);

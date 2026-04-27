@@ -13,7 +13,7 @@ export const MOCK_PROJECTS: Project[] = [
       businessDescription: "Кофейня с авторскими напитками",
       targetAudience: "Молодёжь 20-35, ценители кофе",
       tone: "warm",
-      platforms: ["instagram", "twitter"],
+      platforms: ["instagram", "vk"],
       posts: [
         {
           id: "post_1",
@@ -25,9 +25,9 @@ export const MOCK_PROJECTS: Project[] = [
         },
         {
           id: "post_2",
-          platform: "twitter",
-          text: "Октябрь — это #coffee сезон. Загляни к нам за новым осенним меню ☕🍁",
-          hashtags: ["#coffee", "#Frankfurt", "#autumn"],
+          platform: "vk",
+          text: "Октябрь — это кофейный сезон. Загляните к нам за новым осенним меню ☕🍁",
+          hashtags: ["#кофе", "#осень", "#кофейня"],
           bestTime: "14:00",
           status: "scheduled",
           scheduledAt: new Date(Date.now() + 3600000).toISOString(),
@@ -44,17 +44,17 @@ export const MOCK_PROJECTS: Project[] = [
     createdAt: "2024-04-10",
     plan: {
       id: "plan_2",
-      title: "B2B LinkedIn-стратегия",
+      title: "B2B Instagram/VK-стратегия",
       businessDescription: "IT-консалтинговая компания",
       targetAudience: "Руководители и CTO компаний 50-500 чел.",
       tone: "professional",
-      platforms: ["linkedin"],
+      platforms: ["instagram"],
       posts: [
         {
           id: "post_3",
-          platform: "linkedin",
-          text: "Как автоматизация процессов помогла нашим клиентам сократить операционные расходы на 35% за первый квартал...",
-          hashtags: ["#b2b", "#automation", "#ITconsulting", "#ROI"],
+          platform: "instagram",
+          text: "Как автоматизация процессов помогает B2B-командам снижать операционные расходы на 35% за квартал...",
+          hashtags: ["#b2b", "#automation", "#itconsulting", "#roi"],
           bestTime: "10:00",
           status: "draft",
         },

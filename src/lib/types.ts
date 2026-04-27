@@ -4,23 +4,19 @@ export interface Session {
 }
 
 export type Platform =
-  | "linkedin"
-  | "twitter"
   | "instagram"
   | "vk"
   | "ok"
   | "max";
 
 export const ALL_PLATFORMS = [
-  "linkedin",
-  "twitter",
   "instagram",
   "vk",
   "ok",
   "max",
 ] as const satisfies readonly Platform[];
 
-export const SOCIAL_PLATFORMS = ["vk", "ok", "max"] as const;
+export const SOCIAL_PLATFORMS = ["vk", "ok", "max", "instagram"] as const;
 export type SocialPlatform = (typeof SOCIAL_PLATFORMS)[number];
 
 export type Tone =
@@ -87,6 +83,12 @@ export interface SocialCredentials {
     channelId: string;
     channelName: string;
   };
+  instagram?: {
+    accessToken: string;
+    igUserId: string;
+    username: string;
+    defaultImageUrl?: string;
+  };
 }
 
 export interface PublishResult {
@@ -148,25 +150,5 @@ export const PLATFORM_META: Record<
     hashtagStyle: "block",
     description: "Визуальный контент и сторис",
     audience: "18-35 лет, городская молодёжь",
-  },
-  twitter: {
-    label: "Twitter / X",
-    shortLabel: "TW",
-    color: "#a78bfa",
-    bgColor: "rgba(167,139,250,0.12)",
-    maxLength: 280,
-    hashtagStyle: "inline",
-    description: "Короткие посты и тренды",
-    audience: "20-40 лет, IT и медиа",
-  },
-  linkedin: {
-    label: "LinkedIn",
-    shortLabel: "LI",
-    color: "#38bdf8",
-    bgColor: "rgba(56,189,248,0.12)",
-    maxLength: 3000,
-    hashtagStyle: "block",
-    description: "B2B и профессионалы",
-    audience: "25-50 лет, бизнес-аудитория",
   },
 };

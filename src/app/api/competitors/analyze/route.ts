@@ -9,7 +9,7 @@ import {
 } from "@/lib/competitors/schemas";
 import type { Competitor, CompetitorAnalysis, CompetitorComparisonReport } from "@/lib/competitors/types";
 import { checkRateLimit } from "@/lib/api/rate-limit";
-import { PLATFORM_META } from "@/lib/types";
+import { ALL_PLATFORMS, PLATFORM_META } from "@/lib/types";
 import { z } from "zod";
 
 export const maxDuration = 60;
@@ -28,7 +28,7 @@ const ANALYSIS_INSTRUCTIONS = `Ты — ведущий стратег по ко�
 Верни ТОЛЬКО валидный JSON без markdown-оболочек. Числа в contentMix — примерные проценты (сумма ≈ 100). samplePosts: 2–3 примера, реалистичных для платформ. keyInsights: 2–4 пункта (title + detail). swot: по 2–4 пункта в каждом квадранте. smmMaturityScore: 1–10.`;
 
 function platformHints(): string {
-  return (["vk", "ok", "max", "instagram", "twitter", "linkedin"] as const)
+  return ALL_PLATFORMS
     .map((p) => `${p}: ${PLATFORM_META[p].label} — ${PLATFORM_META[p].description}`)
     .join("\n");
 }
