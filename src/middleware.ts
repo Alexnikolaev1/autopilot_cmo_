@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/onboarding", request.url));
   }
 
   const response = NextResponse.next();
