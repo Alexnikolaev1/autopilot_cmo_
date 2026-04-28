@@ -179,7 +179,7 @@ export default function OnboardingPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">AI-модель</span>
-                  <span className="text-green-400">Gemini 2.5 Flash</span>
+                  <span className="text-green-400">Gemini</span>
                 </div>
               </div>
               <Button onClick={handleFinish} size="lg" className="w-full">

@@ -55,7 +55,7 @@ export default function SettingsPage() {
             <h2 className="text-sm font-bold mb-2">О приложении</h2>
             <div className="text-xs text-muted space-y-1">
               <div className="flex justify-between"><span>Версия</span><span>0.1.0 MVP</span></div>
-              <div className="flex justify-between"><span>AI-модель</span><span className="text-green-400">Gemini 2.5 Flash-Lite</span></div>
+              <div className="flex justify-between"><span>AI-модель</span><span className="text-green-400">Gemini (GEMINI_MODEL)</span></div>
               <div className="flex justify-between"><span>Фреймворк</span><span>Next.js 14 App Router</span></div>
               <div className="flex justify-between"><span>Деплой</span><span>Vercel</span></div>
             </div>

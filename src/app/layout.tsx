@@ -4,7 +4,7 @@ import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: "Autopilot CMO — AI Marketing Director",
-  description: "AI-powered content planning, generation and publishing for small businesses. Powered by Gemini 2.5 Flash.",
+  description: "AI-powered content planning, generation and publishing for small businesses. Powered by Gemini.",
   keywords: ["AI marketing", "content plan", "SMM automation", "Gemini AI"],
 };
 

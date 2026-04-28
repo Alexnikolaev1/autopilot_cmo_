@@ -1,12 +1,20 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
+/** Модели `*-preview*` часто недоступны в v1beta / generateContent — см. ошибки Google 404 NOT_FOUND */
+const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
+
+export function getGeminiModelId(): string {
+  const fromEnv = process.env.GEMINI_MODEL?.trim();
+  return fromEnv && fromEnv.length > 0 ? fromEnv : DEFAULT_GEMINI_MODEL;
+}
+
 export function getGoogleClient(apiKey: string) {
   return createGoogleGenerativeAI({ apiKey });
 }
 
 export function getModel(apiKey: string) {
   const google = getGoogleClient(apiKey);
-  return google("gemini-2.5-flash-lite-preview-06-17");
+  return google(getGeminiModelId());
 }
 
 export const CMO_SYSTEM_PROMPT = `You are a world-class Chief Marketing Officer and Senior SMM strategist with 15+ years of experience growing brands on social media. You specialize in content marketing for small and medium businesses.

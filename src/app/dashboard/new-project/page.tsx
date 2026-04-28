@@ -83,8 +83,12 @@ export default function NewProjectPage() {
         }),
       });
 
-      if (!res.ok) throw new Error("Generation failed");
-      const data = await res.json();
+      const data = (await res.json().catch(() => ({}))) as { plan?: unknown; error?: string };
+      if (!res.ok) {
+        toast.error(typeof data.error === "string" ? data.error : "Не удалось сгенерировать план.");
+        setStep("form");
+        return;
+      }
 
       if (data.plan?.posts) {
         const normalizedPosts = data.plan.posts.map((p: GeneratedPost, i: number) => ({
@@ -117,7 +121,7 @@ export default function NewProjectPage() {
         throw new Error("No posts in response");
       }
     } catch (e) {
-      toast.error("Ошибка генерации. Проверьте API-ключ.");
+      toast.error("Ошибка генерации — проверьте сеть или повторите позже.");
       setStep("form");
       setIsSavingProject(false);
     }

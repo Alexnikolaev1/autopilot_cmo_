@@ -89,6 +89,23 @@ ${platformGuide}
     return Response.json({ plan });
   } catch (error) {
     console.error("Generate plan error:", error);
-    return Response.json({ error: "Failed to generate content plan" }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    const isModelNotFound =
+      /not found/i.test(msg) ||
+      /NOT_FOUND/i.test(msg) ||
+      (typeof error === "object" &&
+        error !== null &&
+        "statusCode" in error &&
+        (error as { statusCode?: number }).statusCode === 404);
+    if (isModelNotFound) {
+      return Response.json(
+        {
+          error:
+            "Модель Gemini недоступна для этого API. Укажите в Vercel переменную GEMINI_MODEL (например gemini-2.0-flash или gemini-1.5-flash).",
+        },
+        { status: 500 }
+      );
+    }
+    return Response.json({ error: "Не удалось сгенерировать план — проверьте ключ и доступ к Gemini." }, { status: 500 });
   }
 }

@@ -51,6 +51,8 @@ cp .env.local.example .env.local
 
 ```env
 GEMINI_API_KEY=ваш_ключ_здесь
+# Необязательно: если Google вернёт 404 по модели — укажите имя модели (по умолчанию gemini-2.0-flash)
+# GEMINI_MODEL=gemini-2.0-flash
 SESSION_SECRET=любая_случайная_строка_32_символа
 ```
 
@@ -74,6 +76,7 @@ vercel
 ### Обязательные переменные
 
 - `GEMINI_API_KEY`
+- `GEMINI_MODEL` (опционально) — если при генерации ошибка «model not found», задайте поддерживаемое имя, например `gemini-2.0-flash` или `gemini-1.5-flash`
 - `SESSION_SECRET` (строка ≥ 32 символов; без неё сессия и шифрование cookie не стартуют)
 - `OK_SECRET_KEY` — если пользуетесь Одноклассниками
 

@@ -58,7 +58,7 @@ export function Sidebar() {
 
       <div className="mt-auto px-5 pt-4 border-t border-white/7">
         <div className="text-[11px] font-mono text-green-400 bg-green-400/10 border border-green-400/20 px-2 py-1 rounded mb-3">
-          ● Gemini 2.5 Flash
+          ● Gemini
         </div>
         <form action={logoutAction}>
           <button
