@@ -1,6 +1,6 @@
-import { generateText } from "ai";
 import { getSession } from "@/lib/get-session";
-import { CMO_SYSTEM_PROMPT, getModel } from "@/lib/ai/google-client";
+import { CMO_SYSTEM_PROMPT } from "@/lib/ai/google-client";
+import { generateTextWithGeminiFallback } from "@/lib/ai/gemini-generate";
 import { extractJsonObject } from "@/lib/ai/parse-json";
 import { getCompetitorById, getCompetitors } from "@/lib/competitors/storage";
 import {
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
   }
 
   const { yourBusiness, competitorId, marketContext } = parsedBody.data;
-  const model = getModel(session.geminiApiKey);
+  const apiKey = session.geminiApiKey;
 
   try {
     if (competitorId) {
@@ -122,8 +122,7 @@ JSON-формат (пример полей, заполни все):
   "keyInsights": [ { "title": "…", "detail": "…" } ]
 }`;
 
-      const { text } = await generateText({
-        model,
+      const { text } = await generateTextWithGeminiFallback(apiKey, {
         system: CMO_SYSTEM_PROMPT + "\n\n" + ANALYSIS_INSTRUCTIONS,
         prompt,
       });
@@ -177,8 +176,7 @@ ${listBlock}
 }
 `;
 
-    const { text } = await generateText({
-      model,
+    const { text } = await generateTextWithGeminiFallback(apiKey, {
       system: CMO_SYSTEM_PROMPT + "\n\n" + ANALYSIS_INSTRUCTIONS,
       prompt,
     });
@@ -200,7 +198,7 @@ ${listBlock}
       if (!raw) {
         try {
           competitorsOut.push(
-            await singleFallback(model, yourBusiness, b, marketContext)
+            await singleFallback(apiKey, yourBusiness, b, marketContext)
           );
         } catch {
           /* пропуск при сбое догоняющего вызова */
@@ -241,8 +239,7 @@ ${listBlock}
 
 /** Дозаполняет одного конкурента, если в отчёте не хватило объекта. */
 async function singleFallback(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  model: any,
+  apiKey: string,
   yourBusiness: string,
   comp: Competitor,
   marketContext?: string
@@ -252,8 +249,7 @@ async function singleFallback(
 ${marketContext ? `Контекст: ${marketContext}\n` : ""}
 Конкурент: ${comp.name} | ${comp.url} | ${comp.platforms.join(", ")}
 JSON как в одиночном анализе. competitorId: "${comp.id}"`;
-  const { text } = await generateText({
-    model,
+  const { text } = await generateTextWithGeminiFallback(apiKey, {
     system: CMO_SYSTEM_PROMPT,
     prompt,
   });

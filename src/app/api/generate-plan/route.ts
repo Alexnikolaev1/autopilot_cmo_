@@ -1,6 +1,6 @@
-import { generateText } from "ai";
 import { getSession } from "@/lib/get-session";
-import { getModel, CMO_SYSTEM_PROMPT } from "@/lib/ai/google-client";
+import { CMO_SYSTEM_PROMPT } from "@/lib/ai/google-client";
+import { generateTextWithGeminiFallback } from "@/lib/ai/gemini-generate";
 import { ALL_PLATFORMS, PLATFORM_META } from "@/lib/types";
 import { z } from "zod";
 
@@ -38,8 +38,6 @@ export async function POST(req: Request) {
       return `- ${meta.label}: до ${meta.maxLength} символов, аудитория: ${meta.audience}`;
     }).join("\n");
 
-    const model = getModel(session.geminiApiKey);
-
     const prompt = `Создай детальный контент-план на 1 неделю.
 
 Бизнес: ${businessDescription}
@@ -72,8 +70,7 @@ ${platformGuide}
   ]
 }`;
 
-    const result = await generateText({
-      model,
+    const result = await generateTextWithGeminiFallback(session.geminiApiKey, {
       system: CMO_SYSTEM_PROMPT,
       prompt,
     });
@@ -97,15 +94,29 @@ ${platformGuide}
         error !== null &&
         "statusCode" in error &&
         (error as { statusCode?: number }).statusCode === 404);
+    const isQuota =
+      /429|quota|RESOURCE_EXHAUSTED|exceeded|limit:\s*0|rate limit/i.test(msg);
     if (isModelNotFound) {
       return Response.json(
         {
           error:
-            "Модель Gemini недоступна для этого API. Укажите в Vercel переменную GEMINI_MODEL (например gemini-2.0-flash или gemini-1.5-flash).",
+            "Модель Gemini недоступна для этого API. Задайте GEMINI_MODEL или цепочку GEMINI_MODEL_FALLBACKS в переменных окружения.",
         },
         { status: 500 }
       );
     }
-    return Response.json({ error: "Не удалось сгенерировать план — проверьте ключ и доступ к Gemini." }, { status: 500 });
+    if (isQuota) {
+      return Response.json(
+        {
+          error:
+            "Квота Gemini исчерпана (free tier / лимиты на проект). Подождите или смените ключ в Google AI Studio, либо включите оплату по документации: https://ai.google.dev/gemini-api/docs/rate-limits — в коде уже перебираются модели gemini-2.5-flash-lite → 2.5-flash → 2.0-flash.",
+        },
+        { status: 429 }
+      );
+    }
+    return Response.json(
+      { error: "Не удалось сгенерировать план — проверьте ключ и доступ к Gemini." },
+      { status: 500 }
+    );
   }
 }

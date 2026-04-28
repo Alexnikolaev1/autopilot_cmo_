@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       messages,
       tools,
       maxSteps: 3,
+      maxRetries: 0,
     });
 
     return result.toDataStreamResponse();

@@ -1,11 +1,34 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
-/** Модели `*-preview*` часто недоступны в v1beta / generateContent — см. ошибки Google 404 NOT_FOUND */
-const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
+/**
+ * Цепочка по умолчанию: сначала lite (высокий объём / отдельные квоты free tier),
+ * затем flash 2.5 / 2.0. См. https://ai.google.dev/gemini-api/docs/rate-limits
+ */
+export const GEMINI_MODEL_FALLBACK_CHAIN = [
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+] as const;
+
+/** Переопределить всю цепочку: `GEMINI_MODEL_FALLBACKS=gemini-2.5-flash-lite,gemini-2.5-flash` */
+export function getGeminiModelIdsToTry(): string[] {
+  const custom = process.env.GEMINI_MODEL_FALLBACKS?.trim();
+  if (custom) {
+    return custom
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  const primary = process.env.GEMINI_MODEL?.trim();
+  if (primary) {
+    const rest = GEMINI_MODEL_FALLBACK_CHAIN.filter((m) => m !== primary);
+    return [primary, ...rest];
+  }
+  return [...GEMINI_MODEL_FALLBACK_CHAIN];
+}
 
 export function getGeminiModelId(): string {
-  const fromEnv = process.env.GEMINI_MODEL?.trim();
-  return fromEnv && fromEnv.length > 0 ? fromEnv : DEFAULT_GEMINI_MODEL;
+  return getGeminiModelIdsToTry()[0] ?? GEMINI_MODEL_FALLBACK_CHAIN[0];
 }
 
 export function getGoogleClient(apiKey: string) {
