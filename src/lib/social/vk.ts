@@ -50,8 +50,15 @@ export async function vkWallPost(params: VKWallPostParams): Promise<VKPostResult
 
 type VkApiErrorPayload = {
   error?: { error_code: number; error_msg: string };
-  /** Обычно массив; при неверном запросе иногда приходит `{}` без полей — трактуем как «не найдено» */
-  response?: Array<{ name: string; id: number }> | Record<string, never>;
+  /** В зависимости от версии/обёртки может прийти разная форма */
+  response?:
+    | Array<{ name?: string; id?: number; gid?: number; screen_name?: string }>
+    | {
+        count?: number;
+        items?: Array<{ name?: string; id?: number; gid?: number; screen_name?: string }>;
+        groups?: Array<{ name?: string; id?: number; gid?: number; screen_name?: string }>;
+      }
+    | Record<string, never>;
 };
 
 /** Для groups.getById нужен параметр `group_ids` (официальное имя параметра во VK API). */
@@ -144,9 +151,18 @@ export async function vkVerifyGroupConnection(
     }
 
     const resp = data.response;
-    const rows = Array.isArray(resp) ? resp : [];
+    const rows = Array.isArray(resp)
+      ? resp
+      : resp && typeof resp === "object"
+      ? "items" in resp && Array.isArray(resp.items)
+        ? resp.items
+        : "groups" in resp && Array.isArray(resp.groups)
+        ? resp.groups
+        : []
+      : [];
     const g = rows[0];
-    if (!g?.id) {
+    const numericId = g?.id ?? g?.gid;
+    if (!numericId) {
       return {
         ok: false,
         message:
@@ -156,8 +172,8 @@ export async function vkVerifyGroupConnection(
 
     return {
       ok: true,
-      groupName: g.name,
-      normalizedGroupId: `-${g.id}`,
+      groupName: g.name ?? g.screen_name ?? `Группа ${lookup}`,
+      normalizedGroupId: `-${numericId}`,
     };
   } catch (e) {
     const msg =
