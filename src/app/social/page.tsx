@@ -41,7 +41,7 @@ const PLATFORMS: Array<{
     docsLabel: "Создать приложение ВКонтакте",
     fields: [
       { name: "accessToken", label: "Access Token сообщества", placeholder: "vk1.a.xxxx...", type: "password", hint: "Только ключ из «Управление → Работа с API» сообщества (не личный OAuth). Права: wall, photos" },
-      { name: "groupId", label: "ID сообщества", placeholder: "-123456789", type: "text", hint: "Число с минусом. Откройте сообщество, ID в URL или в настройках" },
+      { name: "groupId", label: "ID сообщества", placeholder: "-123456789 или club1234567890", type: "text", hint: "Числовой id (часто с минусом) или короткое имя из ссылки vk.com/club..." },
     ],
   },
   {

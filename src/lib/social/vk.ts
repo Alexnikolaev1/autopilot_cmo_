@@ -50,8 +50,29 @@ export async function vkWallPost(params: VKWallPostParams): Promise<VKPostResult
 
 type VkApiErrorPayload = {
   error?: { error_code: number; error_msg: string };
-  response?: Array<{ name: string; id: number }>;
+  /** Обычно массив; при неверном запросе иногда приходит `{}` без полей — трактуем как «не найдено» */
+  response?: Array<{ name: string; id: number }> | Record<string, never>;
 };
+
+/** Для groups.getById нужен параметр `group_ids` (официальное имя параметра во VK API). */
+function parseVkGroupLookupInput(raw: string): string | null {
+  const t = raw.trim();
+  if (!t) return null;
+
+  const withoutMinus = t.startsWith("-") ? t.slice(1) : t;
+
+  // Чисто числовой id (сообщество можно указывать как -123 или 123)
+  if (/^\d+$/.test(withoutMinus)) {
+    return withoutMinus;
+  }
+
+  // Короткое имя: club1234567890, public12345, xxx_yyy и т.д.
+  if (/^[a-zA-Z0-9_]+$/.test(withoutMinus)) {
+    return withoutMinus;
+  }
+
+  return null;
+}
 
 /**
  * Получает информацию о группе ВКонтакте
@@ -86,24 +107,22 @@ export async function vkVerifyGroupConnection(
   accessToken: string,
   groupIdRaw: string
 ): Promise<VkGroupConnectResult> {
-  const trimmed = groupIdRaw.trim();
-  const cleanId = trimmed.replace(/^-/, "");
-  if (!/^\d+$/.test(cleanId)) {
+  const lookup = parseVkGroupLookupInput(groupIdRaw);
+  if (!lookup) {
     return {
       ok: false,
       message:
-        "ID сообщества — только цифры (для группы обычно с минусом в начале, напр. -33683505).",
+        "Укажите ID сообщества: число из URL (можно с минусом, напр. -33683505) или короткое имя (напр. club1234567890).",
     };
   }
 
-  const url =
-    `${VK_API_BASE}/groups.getById?` +
-    new URLSearchParams({
-      group_id: cleanId,
-      access_token: accessToken,
-      v: VK_API_VERSION,
-      fields: "name",
-    }).toString();
+  const params = new URLSearchParams({
+    group_ids: lookup,
+    access_token: accessToken,
+    v: VK_API_VERSION,
+    fields: "name,screen_name",
+  });
+  const url = `${VK_API_BASE}/groups.getById?${params.toString()}`;
 
   try {
     const data = await requestJson<VkApiErrorPayload>(url);
@@ -124,9 +143,15 @@ export async function vkVerifyGroupConnection(
       };
     }
 
-    const g = data.response?.[0];
+    const resp = data.response;
+    const rows = Array.isArray(resp) ? resp : [];
+    const g = rows[0];
     if (!g?.id) {
-      return { ok: false, message: "Сообщество не найдено" };
+      return {
+        ok: false,
+        message:
+          "Сообщество не найдено по указанному ID. Проверьте число без опечаток; в URL сообщества можно скопировать id из параметра clubXXXXXXXXXX или использовать короткое имя после vk.com/",
+      };
     }
 
     return {
