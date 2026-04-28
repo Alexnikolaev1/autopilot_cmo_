@@ -40,7 +40,7 @@ const PLATFORMS: Array<{
     docsUrl: "https://vk.com/editapp?act=create",
     docsLabel: "Создать приложение ВКонтакте",
     fields: [
-      { name: "accessToken", label: "Access Token сообщества", placeholder: "vk1.a.xxxx...", type: "password", hint: "Настройки сообщества → Управление → Работа с API" },
+      { name: "accessToken", label: "Access Token сообщества", placeholder: "vk1.a.xxxx...", type: "password", hint: "Только ключ из «Управление → Работа с API» сообщества (не личный OAuth). Права: wall, photos" },
       { name: "groupId", label: "ID сообщества", placeholder: "-123456789", type: "text", hint: "Число с минусом. Откройте сообщество, ID в URL или в настройках" },
     ],
   },
@@ -90,7 +90,16 @@ export default function SocialNetworksPage() {
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
 
   const handleConnect = async (platformId: SocialPlatform) => {
-    const values = formValues[platformId] ?? {};
+    const raw = formValues[platformId] ?? {};
+    const values =
+      platformId === "vk" && typeof raw.groupId === "string" && raw.groupId.trim().length > 0
+        ? {
+            ...raw,
+            groupId: /^\d+$/.test(raw.groupId.trim())
+              ? `-${raw.groupId.trim()}`
+              : raw.groupId.trim(),
+          }
+        : raw;
     setConnecting(platformId);
     try {
       const res = await fetch("/api/social/connect", {

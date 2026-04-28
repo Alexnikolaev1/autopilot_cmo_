@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/get-session";
 import { saveSocialCredentials, disconnectPlatform } from "@/lib/social/credentials";
-import { vkVerifyToken, vkGetGroup } from "@/lib/social/vk";
+import { vkVerifyGroupConnection } from "@/lib/social/vk";
 import { okVerifyToken } from "@/lib/social/ok";
 import { maxVerifyToken } from "@/lib/social/max";
 import { connectSchema, socialPlatformSchema } from "@/lib/social/schemas";
@@ -43,18 +43,18 @@ export async function POST(req: Request) {
 
     switch (data.platform) {
       case "vk": {
-        const valid = await vkVerifyToken(data.accessToken);
-        if (!valid) return jsonError("Токен ВКонтакте недействителен", requestId, 422);
-
-        const group = await vkGetGroup(data.accessToken, data.groupId);
+        const vk = await vkVerifyGroupConnection(data.accessToken, data.groupId);
+        if (!vk.ok) {
+          return jsonError(vk.message, requestId, 422);
+        }
         await saveSocialCredentials({
           vk: {
             accessToken: data.accessToken,
-            groupId: data.groupId.startsWith("-") ? data.groupId : `-${data.groupId}`,
-            groupName: group?.name ?? `Группа ${data.groupId}`,
+            groupId: vk.normalizedGroupId,
+            groupName: vk.groupName,
           },
         });
-        return withRequestHeaders({ success: true, groupName: group?.name }, requestId);
+        return withRequestHeaders({ success: true, groupName: vk.groupName }, requestId);
       }
       case "ok": {
         const secretKey = process.env.OK_SECRET_KEY;

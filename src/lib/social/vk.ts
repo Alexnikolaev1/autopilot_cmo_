@@ -48,6 +48,11 @@ export async function vkWallPost(params: VKWallPostParams): Promise<VKPostResult
   });
 }
 
+type VkApiErrorPayload = {
+  error?: { error_code: number; error_msg: string };
+  response?: Array<{ name: string; id: number }>;
+};
+
 /**
  * Получает информацию о группе ВКонтакте
  */
@@ -55,27 +60,94 @@ export async function vkGetGroup(
   accessToken: string,
   groupId: string
 ): Promise<{ name: string; id: number } | null> {
-  try {
-    const cleanId = groupId.replace("-", "");
-    const data = await requestJson<{ response?: Array<{ name: string; id: number }> }>(
-      `${VK_API_BASE}/groups.getById?group_id=${cleanId}&v=${VK_API_VERSION}&access_token=${accessToken}`
-    );
-    if (data.response?.[0]) {
-      return { name: data.response[0].name, id: data.response[0].id };
+  const r = await vkVerifyGroupConnection(accessToken, groupId);
+  if (!r.ok) return null;
+  return {
+    name: r.groupName,
+    id: Math.abs(Number(r.normalizedGroupId.replace("-", ""))),
+  };
+}
+
+export type VkGroupConnectResult =
+  | {
+      ok: true;
+      groupName: string;
+      /** Отрицательный id сообщества для wall.post (-123…) */
+      normalizedGroupId: string;
     }
-    return null;
-  } catch {
-    return null;
+  | { ok: false; message: string };
+
+/**
+ * Проверка токена **сообщества** и доступа к стене: только `groups.getById`.
+ * Токен из «Управление → Работа с API» — это не пользовательский токен,
+ * метод `users.get` для него даёт ошибку («токен недействителен» при проверке).
+ */
+export async function vkVerifyGroupConnection(
+  accessToken: string,
+  groupIdRaw: string
+): Promise<VkGroupConnectResult> {
+  const trimmed = groupIdRaw.trim();
+  const cleanId = trimmed.replace(/^-/, "");
+  if (!/^\d+$/.test(cleanId)) {
+    return {
+      ok: false,
+      message:
+        "ID сообщества — только цифры (для группы обычно с минусом в начале, напр. -33683505).",
+    };
+  }
+
+  const url =
+    `${VK_API_BASE}/groups.getById?` +
+    new URLSearchParams({
+      group_id: cleanId,
+      access_token: accessToken,
+      v: VK_API_VERSION,
+      fields: "name",
+    }).toString();
+
+  try {
+    const data = await requestJson<VkApiErrorPayload>(url);
+    if (data.error) {
+      const { error_code: code, error_msg: vkMsg } = data.error;
+      let hint = vkMsg;
+      if (code === 5 || code === 15) {
+        hint =
+          "Доступ запрещён: нужен ключ сообщества из «Управление → Работа с API» с правами wall (рекомендуется также photos для вложений).";
+      }
+      if (code === 100) {
+        hint =
+          "Неверный параметр (часто неверный ID или формат группы для этого токена).";
+      }
+      return {
+        ok: false,
+        message: `${hint} (${vkMsg}, код ${code})`,
+      };
+    }
+
+    const g = data.response?.[0];
+    if (!g?.id) {
+      return { ok: false, message: "Сообщество не найдено" };
+    }
+
+    return {
+      ok: true,
+      groupName: g.name,
+      normalizedGroupId: `-${g.id}`,
+    };
+  } catch (e) {
+    const msg =
+      e instanceof SocialApiError ? e.message : "Не удалось обратиться к API ВК";
+    return { ok: false, message: msg };
   }
 }
 
 /**
- * Проверяет валидность токена ВКонтакте
+ * Устарело для токена сообщества: используйте {@link vkVerifyGroupConnection}.
  */
 export async function vkVerifyToken(accessToken: string): Promise<boolean> {
   try {
     const data = await requestJson<{ response?: Array<{ id: number }> }>(
-      `${VK_API_BASE}/users.get?v=${VK_API_VERSION}&access_token=${accessToken}`
+      `${VK_API_BASE}/users.get?v=${VK_API_VERSION}&access_token=${encodeURIComponent(accessToken)}`
     );
     return !!data.response?.[0]?.id;
   } catch (error) {
