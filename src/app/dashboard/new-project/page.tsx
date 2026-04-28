@@ -9,6 +9,14 @@ import type { GeneratedPost, Platform, Tone } from "@/lib/types";
 
 type Step = "form" | "generating" | "preview";
 
+type GeneratePlanApiResponse = {
+  error?: string;
+  plan?: {
+    title?: string;
+    posts?: GeneratedPost[];
+  };
+};
+
 const PLATFORM_OPTIONS = [
   { value: "vk", label: "ВКонтакте" },
   { value: "ok", label: "Одноклассники" },
@@ -83,19 +91,20 @@ export default function NewProjectPage() {
         }),
       });
 
-      const data = (await res.json().catch(() => ({}))) as { plan?: unknown; error?: string };
+      const data = (await res.json().catch(() => ({}))) as GeneratePlanApiResponse;
       if (!res.ok) {
         toast.error(typeof data.error === "string" ? data.error : "Не удалось сгенерировать план.");
         setStep("form");
         return;
       }
 
-      if (data.plan?.posts) {
-        const normalizedPosts = data.plan.posts.map((p: GeneratedPost, i: number) => ({
-            ...p,
-            id: p.id || `post_${i}`,
-            status: "draft",
-          }));
+      const posts = data.plan?.posts;
+      if (Array.isArray(posts) && posts.length > 0) {
+        const normalizedPosts = posts.map((p, i) => ({
+          ...p,
+          id: p.id || `post_${i}`,
+          status: "draft" as const,
+        }));
         setGeneratedPosts(normalizedPosts);
         setStep("preview");
         toast.success("Контент-план готов! ✦");
@@ -113,7 +122,7 @@ export default function NewProjectPage() {
             tone: formData.tone as Tone,
             platforms: selectedPlatforms as Platform[],
             posts: normalizedPosts,
-            title: data.plan.title,
+            title: data.plan?.title,
           }),
         });
         setIsSavingProject(false);
